@@ -13,7 +13,7 @@ module.exports = function (stories, realm) {
           url: img,
           descriptor: ''
         })
-        realm.create('Veteran', {
+        const veteran = realm.create('Veteran', {
           uuid: uuid.v1(),
           firstName,
           lastName,
@@ -23,9 +23,9 @@ module.exports = function (stories, realm) {
           rank: '',
           bio: '',
           filled: false,
-          profileUrl: url,
-          facePhoto: [facePhoto]
+          profileUrl: url
         })
+        veteran.facePhotos.push(facePhoto)
       }
     }
     console.log('Collisions count: ', collisionsCount)
