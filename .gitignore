@@ -3,5 +3,6 @@ node_modules
 *.realm.lock
 .idea
 *.realm.management
+*.realm.note
 *.lock
 package-lock.json

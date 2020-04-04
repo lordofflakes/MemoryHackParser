@@ -8,6 +8,7 @@ const Veteran = {
     yearBorn: 'int',
     facePhotos: 'FacePhoto[]',
     rank: 'string',
+    feats: 'string',
     featsImages: 'string[]',
     bio: 'string',
     possiblyRelated: 'Veteran[]'

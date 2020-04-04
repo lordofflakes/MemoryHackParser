@@ -9,7 +9,7 @@ const uuid = require('uuid')
 
 console.log(uuid.v1())
 
-const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 1, path: 'knigapodviga.realm' })
+const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 2, path: 'knigapodviga.realm' })
 
 function timeout (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -23,15 +23,33 @@ async function main () {
     if (people) {
       for (const human of people) {
         const humanName = striptags(entities.decode((human.name)))
-        console.log('Parsing person:', humanName)
+
+        const [firstName = '', lastName = '', middleName = ''] = humanName.split(' ')
         const humanData = await getHumanData(human.href).catch(e => console.log('Failed to get human data', e.message))
         if (humanData) {
-          console.log(humanData.replace(/\n\s*\n/g, '\n'))
-          // console.log(humanData.split('\n').reduce((prev, line) => {
-          //   const all = prev || ''
-          //   if (line) return `${all}\n${line}`
-          //   else return all
-          // }, ''))
+          const {
+            yearBorn,
+            bio,
+            image,
+            feats
+          } = humanData
+          realm.write(() => {
+            const facePhoto = realm.create('FacePhoto', {
+              url: image,
+              descriptor: ''
+            })
+            realm.create('Veteran', {
+              uuid: uuid.v1(),
+              firstName,
+              lastName,
+              middleName,
+              yearBorn,
+              feats,
+              rank: '',
+              bio,
+              facePhoto: [facePhoto]
+            })
+          })
           await timeout(10000)
         }
       }
@@ -89,9 +107,39 @@ function getHumanData (url) {
       if (error) reject(error)
       else {
         const $ = cheerio.load(html)
+        const image = $('#content img').attr('src')
         const paragraphs = $('.paragraph')
         const paragraph0Data = striptags(entities.decode($(paragraphs[0]).html()), [], '\n')
-        resolve(paragraph0Data)
+        const splitData = paragraph0Data.split('\n\n\n')
+        let feats = ''
+        let featInNext = false
+        for (const i in splitData) {
+          if (featInNext) {
+            const cData = splitData[i]
+            cData.replace(/\n/g, '')
+            if (cData.length === 0) continue
+            else {
+              feats = splitData[i].replace(/\n/g, '')
+              break
+            }
+          } else if (splitData[i].includes('Награды, звания')) {
+            featInNext = true
+          }
+        }
+        const paragraph1Data = paragraphs[1] ? striptags(entities.decode($(paragraphs[0]).html()), [], '\n') : ''
+        const years = paragraph0Data.match(/\d{4}/g)
+        const yearBorn = years ? years.reduce((prev, current) => {
+          if (parseInt(current) < prev) return parseInt(current)
+          else return prev
+        }, 1945) : 0
+
+        resolve({
+          yearBorn,
+          bio: `${paragraph1Data}`.replace(/\n\s*\n/g, '\n'),
+          image: 'http://www.knigapodviga.ru/' + image,
+          feats
+        })
+        // Награды, звания
       }
     })
   })

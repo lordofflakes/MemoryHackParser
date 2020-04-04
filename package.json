@@ -6,7 +6,7 @@
   "dependencies": {
     "cheerio": "0.20.0",
     "html-entities": "^1.2.1",
-    "realm": "^3.6.0",
+    "realm": "^5.0.3",
     "request": "2.79.0",
     "striptags": "^3.1.1",
     "uuid": "^3.3.3"
