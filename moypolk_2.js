@@ -23,16 +23,16 @@ const searchHistoryRealm = new Realm({
 
 async function main () {
   const entries = Array.from(realm.objects('Veteran'))
-  console.log()
+  const count = entries.length
   for (const i in entries) {
     const veteran = entries[i]
     const query = veteran.lastName
     const searches = searchHistoryRealm.objects('History').filtered('query = $0', query)
     if (searches.length === 0) {
-      searchHistoryRealm.write(() => searchHistoryRealm.create('History', { query }))
-      console.log('Search', query)
+      console.log(`Query ${i}/${count}: ${query}`)
       const stories = await moypolkSearch(query)
       writeStories(stories, realm)
+      searchHistoryRealm.write(() => searchHistoryRealm.create('History', { query }))
     } else {
       console.log('Skip', query)
     }
