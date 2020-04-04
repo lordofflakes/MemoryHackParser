@@ -13,18 +13,30 @@ function timeout (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 3, path: 'realm/default.realm' })
-const alphabet = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ь', 'Ы', 'Э', 'Ю', 'Я']
+const searchHistoryRealm = new Realm({
+  path: 'realm/searchHistory.realm',
+  schema: [{
+    name: 'History',
+    properties: { query: 'string' }
+  }]
+})
 
 async function main () {
-  for (const f of alphabet) {
-    for (const s of alphabet) {
-      const query = `${f}${s}`
-      console.log('Searching at ', query)
+  const entries = Array.from(realm.objects('Veteran'))
+  console.log()
+  for (const i in entries) {
+    const veteran = entries[i]
+    const query = veteran.lastName
+    const searches = searchHistoryRealm.objects('History').filtered('query = $0', query)
+    if (searches.length === 0) {
+      searchHistoryRealm.write(() => searchHistoryRealm.create('History', { query }))
+      console.log('Search', query)
       const stories = await moypolkSearch(query)
-      console.log(`Adding ${stories.length} stories`)
       writeStories(stories, realm)
-      await timeout(100)
+    } else {
+      console.log('Skip', query)
     }
+    await timeout(10)
   }
 }
 
