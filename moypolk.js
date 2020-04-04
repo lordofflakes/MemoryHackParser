@@ -6,7 +6,8 @@ const Realm = require('realm')
 const schema = require('./schema')
 const striptags = require('striptags')
 const uuid = require('uuid')
-// const [last2, first2, ...middle2] = 'Алиев Али-Ага'.split(' ')
+const moypolkSearch = require('./moypolkSearch')
+
 function timeout (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -18,7 +19,7 @@ async function main () {
     for (const s of alphabet) {
       const query = `${f}${s}`
       console.log('Searching at ', query)
-      const stories = await searchForStories(query)
+      const stories = await moypolkSearch(query)
       console.log(`Adding ${stories.length} stories`)
 
       realm.write(() => {
@@ -51,33 +52,6 @@ async function main () {
       await timeout(1000)
     }
   }
-}
-const searchForStories = (query, page = 1, cards = []) => {
-  return new Promise((resolve, reject) => {
-    request(`https://www.moypolk.ru/search/soldiers?page=${page}&s=${encodeURIComponent(query)}`, (error, response, html) => {
-      console.log('Got page', page)
-      if (error) reject(error)
-      else {
-        const $ = cheerio.load(html)
-        const searchCards = $('.search2__search-card')
-        const cardsData = []
-        searchCards.each((index, card) => {
-          const img = $('.search-card__photo-container img', card).attr('src')
-          if (img) {
-            const wrapping = $('.search-card__wrap .search-card__wrapping a.search-card__caption', card)
-            const [lastName, firstName, ...middleName] = entities.decode($(wrapping).html()).replace(/\n/g, '').replace(/\s\s+/g, ' ').trim().split(' ')
-            const url = $(wrapping).attr('href')
-            cardsData.push({ img: img.replace('/h200/', '/w390/'), lastName, firstName, middleName: middleName.join(' '), url })
-          }
-        })
-        if (cardsData.length > 0) {
-          resolve(searchForStories(query, page + 1, [...cards, ...cardsData]))
-        } else {
-          resolve(cards)
-        }
-      }
-    })
-  })
 }
 
 main()
