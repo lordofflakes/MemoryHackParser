@@ -20,10 +20,13 @@ async function main () {
       console.log('Searching at ', query)
       const stories = await searchForStories(query)
       console.log(`Adding ${stories.length} stories`)
-      for (const { img = '', lastName, firstName, middleName = '', url = '' } of stories) {
-        const existingStories = realm.objects('Veteran').filtered('profileUrl = $0', url)
-        if (existingStories.length === 0 && lastName && firstName) {
-          realm.write(() => {
+
+      realm.write(() => {
+        let collisionsCount = 0
+        for (const { img = '', lastName, firstName, middleName = '', url = '' } of stories) {
+          const existingStories = realm.objects('Veteran').filtered('profileUrl = $0', url)
+          if (existingStories.length > 0) collisionsCount++
+          if (existingStories.length === 0 && lastName && firstName) {
             const facePhoto = realm.create('FacePhoto', {
               url: img,
               descriptor: ''
@@ -41,13 +44,13 @@ async function main () {
               profileUrl: url,
               facePhoto: [facePhoto]
             })
-          })
+          }
         }
-      }
+        console.log('Collisions count: ', collisionsCount)
+      })
       await timeout(1000)
     }
   }
-  console.log(stories.length)
 }
 const searchForStories = (query, page = 1, cards = []) => {
   return new Promise((resolve, reject) => {

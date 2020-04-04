@@ -7,7 +7,7 @@ const schema = require('./schema')
 const striptags = require('striptags')
 const uuid = require('uuid')
 
-const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 2, path: 'knigapodviga.realm' })
+const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 3, path: 'default.realm' })
 
 async function main () {
   const letterURLs = await getLeterURLS()
@@ -18,7 +18,7 @@ async function main () {
       for (const human of people) {
         const humanName = striptags(entities.decode((human.name)))
 
-        const [firstName = '', lastName = '', middleName = ''] = humanName.split(' ')
+        const [lastName = '', firstName = '', middleName = ''] = humanName.split(' ')
         const humanData = await getHumanData(human.href).catch(e => console.log('Failed to get human data', e.message))
         if (humanData) {
           const {
@@ -40,6 +40,8 @@ async function main () {
               yearBorn,
               feats,
               rank: '',
+              profileUrl: '',
+              filled: true,
               bio,
               facePhoto: [facePhoto]
             })
