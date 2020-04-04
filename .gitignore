@@ -1,0 +1,7 @@
+node_modules
+*.realm
+*.realm.lock
+.idea
+*.realm.management
+*.lock
+package-lock.json
