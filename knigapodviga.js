@@ -1,5 +1,5 @@
-const request 	= require('request')
-const cheerio 	= require('cheerio')
+const request = require('request')
+const cheerio = require('cheerio')
 const Entities = require('html-entities').AllHtmlEntities
 const entities = new Entities()
 const Realm = require('realm')
@@ -7,13 +7,7 @@ const schema = require('./schema')
 const striptags = require('striptags')
 const uuid = require('uuid')
 
-console.log(uuid.v1())
-
 const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 2, path: 'knigapodviga.realm' })
-
-function timeout (ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
 
 async function main () {
   const letterURLs = await getLeterURLS()
@@ -50,7 +44,6 @@ async function main () {
               facePhoto: [facePhoto]
             })
           })
-          await timeout(10000)
         }
       }
     }
