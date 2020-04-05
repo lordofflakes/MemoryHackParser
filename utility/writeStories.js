@@ -1,7 +1,8 @@
 const uuid = require('uuid')
+require('colors')
 
 module.exports = function (stories, realm) {
-  console.log(`Adding ${stories.length} stories`)
+  console.log(`Adding ${stories.length} stories`.green)
 
   realm.write(() => {
     let collisionsCount = 0
@@ -28,6 +29,6 @@ module.exports = function (stories, realm) {
         veteran.facePhotos.push(facePhoto)
       }
     }
-    console.log('Collisions count: ', collisionsCount)
+    console.log('Collisions count: '.yellow, collisionsCount)
   })
 }

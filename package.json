@@ -1,5 +1,5 @@
 {
-  "name": "MemoryHackParser",
+  "name": "memoryhackparser",
   "version": "1.0.0",
   "description": "Parser",
   "main": "index.js",
@@ -10,6 +10,7 @@
     "@tensorflow/tfjs-node": "^1.5.2",
     "canvas": "^2.6.1",
     "cheerio": "0.20.0",
+    "colors": "^1.4.0",
     "face-api.js": "^0.22.1",
     "html-entities": "^1.2.1",
     "jimp": "^0.10.0",

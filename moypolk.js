@@ -2,6 +2,7 @@ const Realm = require('realm')
 const schema = require('./utility/schema')
 const moypolkSearch = require('./utility/moypolkSearch')
 const writeStories = require('./utility/writeStories')
+require('colors')
 
 function timeout (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -17,12 +18,12 @@ const searchHistoryRealm = new Realm({
 const alphabet = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ь', 'Ы', 'Э', 'Ю', 'Я']
 
 async function main () {
-  console.log('Moypolk stage 1')
+  console.log('Moypolk stage 1'.green)
 
   for (const f of alphabet) {
     for (const s of alphabet) {
       const query = `${f}${s}`
-      console.log('Searching at ', query)
+      console.log('Searching at '.green, query)
       const stories = await moypolkSearch(query)
       writeStories(stories, realm)
       await timeout(100)
@@ -38,12 +39,12 @@ async function main () {
     const query = veteran.lastName
     const searches = searchHistoryRealm.objects('History').filtered('query = $0', query)
     if (searches.length === 0) {
-      console.log(`Query ${i}/${count}: ${query}`)
+      console.log(`Query ${i}/${count}: ${query}`.green)
       const stories = await moypolkSearch(query)
       writeStories(stories, realm)
       searchHistoryRealm.write(() => searchHistoryRealm.create('History', { query }))
     } else {
-      console.log('Skip', query)
+      console.log('Skip'.yellow, query)
     }
     await timeout(10)
   }
