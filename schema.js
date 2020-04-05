@@ -13,6 +13,7 @@ const Veteran = {
     bio: 'string',
     possiblyRelated: 'Veteran[]',
     profileUrl: 'string',
+    origin: { type: 'bool', default: false },
     filled: { type: 'bool', default: false }
   }
 }
