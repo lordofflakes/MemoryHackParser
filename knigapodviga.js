@@ -7,7 +7,7 @@ const schema = require('./utility/schema')
 const striptags = require('striptags')
 const uuid = require('uuid')
 
-const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 3, path: 'realm/default.realm' })
+const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 4, path: 'realm/default.realm' })
 
 async function main () {
   const letterURLs = await getLeterURLS()
@@ -140,4 +140,4 @@ function getHumanData (url) {
   })
 }
 
-main()
+module.exports = main
