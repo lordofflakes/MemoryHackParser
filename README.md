@@ -8,8 +8,8 @@
 
 ### Запуск парсера ###
 
-`npm install`
-`npm start`
+* npm install
+* npm start
 
 ### Параметры ###
 * polk_skip - Пропускает парсинг https://www.moypolk.ru
