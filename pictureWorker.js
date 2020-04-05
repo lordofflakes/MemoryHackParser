@@ -26,12 +26,14 @@ const convertToJPG = (openAddress) => {
     try {
       const name = uuid.v4()
       await Jimp.read(openAddress, (err, pic) => {
-        if (err) throw err
-        pic
-          .quality(60)
-          .writeAsync('Downloads/' + name + '.jpg').then((Result) => {
-            resolve('Downloads/' + name + '.jpg')
-          })
+        if (err) resolve(false)
+        else {
+          pic
+            .quality(60)
+            .writeAsync('Downloads/' + name + '.jpg').then((Result) => {
+              resolve('Downloads/' + name + '.jpg')
+            })
+        }
       })
     } catch (e) {
       reject(e)

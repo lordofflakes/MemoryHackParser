@@ -99,23 +99,27 @@ const getDiscriptor = async function (veteran) {
         if (desc.replace(/\s+/g, '') === '') {
           const addressSave = await pic.download(veteran.facePhotos[0].url)
           const addressConvert = await pic.convertToJPG(addressSave)
-          fs.unlinkSync(addressSave)
-          const n = await compare.getNumberOfPeoples(addressConvert)
-          if (n === 1) {
-            await compare.getDescriptor(addressConvert)
-              .then(result => {
-                fs.unlinkSync(addressConvert)
-                realm.write(() => {
-                  veteran.facePhotos[0].descriptor = JSON.stringify(result)
+          if (addressConvert) {
+            fs.unlinkSync(addressSave)
+            const n = await compare.getNumberOfPeoples(addressConvert)
+            if (n === 1) {
+              await compare.getDescriptor(addressConvert)
+                .then(result => {
+                  fs.unlinkSync(addressConvert)
+                  realm.write(() => {
+                    veteran.facePhotos[0].descriptor = JSON.stringify(result)
+                  })
+                  resolve(veteran.facePhotos[0].descriptor)
                 })
-                resolve(veteran.facePhotos[0].descriptor)
-              })
-              .catch(e => {
-                fs.unlinkSync(addressConvert)
-                resolve(false)
-              })
+                .catch(e => {
+                  fs.unlinkSync(addressConvert)
+                  resolve(false)
+                })
+            } else {
+              fs.unlinkSync(addressConvert)
+              resolve(false)
+            }
           } else {
-            fs.unlinkSync(addressConvert)
             resolve(false)
           }
         }
