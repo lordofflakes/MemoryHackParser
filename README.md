@@ -18,3 +18,7 @@
 
 Например:
 `npm start polk_skip kniga_skip`
+
+### Результаты ###
+Базу из 320 000 человек можно получить по ссылке:
+https://yadi.sk/d/AZVFF00UX763Zg
