@@ -1,8 +1,6 @@
-const Realm = require('realm')
-const schema = require('./schema')
-const uuid = require('uuid')
+/* eslint-disable no-async-promise-executor */
 const fs = require('fs')
-const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 4, path: 'knigapodviga.realm' })
+// const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 4, path: 'knigapodviga.realm' })
 const compare = require('./compare')
 const pic = require('./pictureWorker')
 
@@ -16,7 +14,7 @@ const capitalizeFirst = function (string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-const searchDublicate = function (firstName, middleName, lastName) {
+const searchDublicate = function (firstName, middleName, lastName, realm) {
   const trimFirstName = firstName.trim()
   const capFirstName = capitalize(trimFirstName)
   const lowerFirstName = trimFirstName.toLowerCase()
@@ -52,19 +50,19 @@ const searchDublicate = function (firstName, middleName, lastName) {
   } else return false
 }
 
-const checkVeteranAdequate = function (Veteran) {
+const checkVeteranAdequate = function (veteran) {
   let cnt = 0
-  let string = Veteran.firstName
+  let string = veteran.firstName
   string.replace(/\s+/g, '')
   if (string === '') {
     cnt++
   }
-  string = Veteran.lastName
+  string = veteran.lastName
   string.replace(/\s+/g, '')
   if (string === '') {
     cnt++
   }
-  string = Veteran.middleName
+  string = veteran.middleName
   string.replace(/\s+/g, '')
   if (string === '') {
     cnt++
@@ -73,25 +71,25 @@ const checkVeteranAdequate = function (Veteran) {
   else return true
 }
 
-const starterCheck = function (veteran) {
+const starterCheck = function (veteran, realm) {
   let allOrigins = []
-  let result = searchDublicate(veteran.firstName, veteran.middleName, veteran.lastName)
+  let result = searchDublicate(veteran.firstName, veteran.middleName, veteran.lastName, realm)
   if (result) allOrigins = allOrigins.concat(result)
-  result = searchDublicate(veteran.firstName, veteran.lastName, veteran.middleName)
+  result = searchDublicate(veteran.firstName, veteran.lastName, veteran.middleName, realm)
   if (result) allOrigins = allOrigins.concat(result)
-  result = searchDublicate(veteran.middleName, veteran.firstName, veteran.lastName)
+  result = searchDublicate(veteran.middleName, veteran.firstName, veteran.lastName, realm)
   if (result) allOrigins = allOrigins.concat(result)
-  result = searchDublicate(veteran.middleName, veteran.lastName, veteran.firstName)
+  result = searchDublicate(veteran.middleName, veteran.lastName, veteran.firstName, realm)
   if (result) allOrigins = allOrigins.concat(result)
-  result = searchDublicate(veteran.lastName, veteran.firstName, veteran.middleName)
+  result = searchDublicate(veteran.lastName, veteran.firstName, veteran.middleName, realm)
   if (result) allOrigins = allOrigins.concat(result)
-  result = searchDublicate(veteran.lastName, veteran.middleName, veteran.firstName)
+  result = searchDublicate(veteran.lastName, veteran.middleName, veteran.firstName, realm)
   if (result) allOrigins = allOrigins.concat(result)
   if (allOrigins.length === 0) return false
   else return allOrigins
 }
 
-const getDiscriptor = async function (veteran) {
+const getDescriptor = async function (veteran, realm) {
   return new Promise(async (resolve, reject) => {
     try {
       if (veteran.facePhotos.length > 0) {
@@ -100,30 +98,29 @@ const getDiscriptor = async function (veteran) {
           const addressSave = await pic.download(veteran.facePhotos[0].url)
           const addressConvert = await pic.convertToJPG(addressSave)
           if (addressConvert) {
-            fs.unlinkSync(addressSave)
+            // fs.unlinkSync(addressSave)
             const n = await compare.getNumberOfPeoples(addressConvert)
             if (n === 1) {
-              await compare.getDescriptor(addressConvert)
+              await compare.generateDescriptor(addressConvert)
                 .then(result => {
-                  fs.unlinkSync(addressConvert)
+                  // fs.unlinkSync(addressConvert)
                   realm.write(() => {
                     veteran.facePhotos[0].descriptor = JSON.stringify(result)
                   })
                   resolve(veteran.facePhotos[0].descriptor)
                 })
                 .catch(e => {
-                  fs.unlinkSync(addressConvert)
+                  // fs.unlinkSync(addressConvert)
                   resolve(false)
                 })
             } else {
-              fs.unlinkSync(addressConvert)
+              // fs.unlinkSync(addressConvert)
               resolve(false)
             }
           } else {
             resolve(false)
           }
-        }
-        else resolve(veteran.facePhotos[0].descriptor)
+        } else resolve(veteran.facePhotos[0].descriptor)
       }
     } catch (e) {
       reject(e)
@@ -131,14 +128,14 @@ const getDiscriptor = async function (veteran) {
   })
 }
 
-const checkPictures = async function (testSubject, originSubject) {
+const checkPictures = async function (testSubject, originSubject, realm) {
   return new Promise(async (resolve, reject) => {
     try {
-      const mainDesc = await getDiscriptor(testSubject)
+      const mainDesc = await getDescriptor(testSubject, realm)
       let isCopy = false
       if (mainDesc) {
         for (const orig of originSubject) {
-          const desc = await getDiscriptor(orig)
+          const desc = await getDescriptor(orig, realm)
           isCopy = await compare.compare2Descriptors(JSON.parse(mainDesc), JSON.parse(desc))
           if (isCopy) break
         }

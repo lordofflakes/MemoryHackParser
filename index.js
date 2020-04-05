@@ -9,26 +9,25 @@ const uuid = require('uuid')
 
 console.log(uuid.v1())
 
-let realm = new Realm({schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 1 })
+// let realm = new Realm({schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 1 })
 
 function timeout (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-function getPolkHtmlByName (firstname, lastname) {
-  return new Promise((resolve, reject) => {
-    request(`https://www.moypolk.ru/search/soldiers?s=${encodeURIComponent(lastname)}%20${encodeURIComponent(firstname)}`, (error, response, html) => {
-      if (error) reject(error)
-      else resolve(html)
-    })
-  })
+async function getPolkHtmlByName (firstname, lastname) {
+  console.log('1')
+  await timeout(1000)
+  console.log('2')
+  await timeout(1000)
+  console.log('3')
+  await timeout(1000)
+  return 'SHIT'
 }
 
 async function main () {
   const html = await getPolkHtmlByName('Герасименко', 'Василий').catch(e => console.log(e))
-  if (html) {
-    
-  }
+  console.log(html)
 }
 
 main()

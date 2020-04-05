@@ -5,5 +5,5 @@ node_modules
 *.realm.management
 *.realm.note
 *.lock
-Downloads/*
+/downloads/*
 package-lock.json

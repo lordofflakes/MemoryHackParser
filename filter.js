@@ -1,6 +1,6 @@
 const Realm = require('realm')
 const schema = require('./schema')
-const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 4, path: 'knigapodviga.realm' })
+const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 4, path: 'realm/default.realm' })
 const checkers = require('./checkers')
 
 const setOrigin = function (veteran) {
@@ -11,22 +11,22 @@ const setOrigin = function (veteran) {
 
 async function main () {
   const veterans = realm.objects('Veteran')
-  cnt = 0
-  cnt_origin = 0
+  let cnt = 0
+  let cntOrigin = 0
   for (const veteran of veterans) {
-    console.log(`Checked ${cnt} veterans found ${cnt_origin} original ones`)
+    console.log(`Checked ${cnt} veterans found ${cntOrigin} original ones`)
     cnt++
     if (veteran.origin) {
-      cnt_origin++
+      cntOrigin++
       continue
     }
     if (!checkers.checkVeteranAdequate(veteran)) continue
-    const origins = checkers.starterCheck(veteran)
+    const origins = checkers.starterCheck(veteran, realm)
     if (origins) {
-      if (await checkers.checkPictures(veteran, origins)) continue
+      if (await checkers.checkPictures(veteran, origins, realm)) continue
     }
     setOrigin(veteran)
-    cnt_origin++
+    cntOrigin++
   }
 }
 

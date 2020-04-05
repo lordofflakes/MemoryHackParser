@@ -2,7 +2,7 @@ const fs = require('fs')
 const request = require('request')
 const Jimp = require('jimp')
 const uuid = require('uuid')
-
+const downloadsFolder = 'downloads/'
 
 const download = (downAddress) => {
   return new Promise(async (resolve, reject) => {
@@ -13,8 +13,8 @@ const download = (downAddress) => {
         .on('error', function (err) {
           console.error(err)
         })
-        .pipe(fs.createWriteStream('Downloads/' + name))
-        .on('close', () => resolve('Downloads/' + name))
+        .pipe(fs.createWriteStream(downloadsFolder + name))
+        .on('close', () => resolve(downloadsFolder + name))
     } catch (e) {
       reject(e)
     }
@@ -30,8 +30,8 @@ const convertToJPG = (openAddress) => {
         else {
           pic
             .quality(60)
-            .writeAsync('Downloads/' + name + '.jpg').then((Result) => {
-              resolve('Downloads/' + name + '.jpg')
+            .writeAsync(downloadsFolder + name + '.jpg').then((Result) => {
+              resolve(downloadsFolder + name + '.jpg')
             })
         }
       })

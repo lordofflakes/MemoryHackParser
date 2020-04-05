@@ -12,7 +12,7 @@ const writeStories = require('./writeStories')
 function timeout (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
-const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 3, path: 'realm/default.realm' })
+const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 4, path: 'realm/default.realm' })
 const searchHistoryRealm = new Realm({
   path: 'realm/searchHistory.realm',
   schema: [{
