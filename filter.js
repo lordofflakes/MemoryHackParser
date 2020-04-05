@@ -1,7 +1,7 @@
 const Realm = require('realm')
-const schema = require('./schema')
+const schema = require('./utility/schema')
 const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 4, path: 'realm/default.realm' })
-const checkers = require('./checkers')
+const checkers = require('./utility/checkers')
 
 const setOrigin = function (veteran) {
   realm.write(() => {

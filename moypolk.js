@@ -1,7 +1,7 @@
 const Realm = require('realm')
-const schema = require('./schema')
-const moypolkSearch = require('./moypolkSearch')
-const writeStories = require('./writeStories')
+const schema = require('./utility/schema')
+const moypolkSearch = require('./utility/moypolkSearch')
+const writeStories = require('./utility/writeStories')
 
 function timeout (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -17,7 +17,7 @@ const searchHistoryRealm = new Realm({
 const alphabet = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ь', 'Ы', 'Э', 'Ю', 'Я']
 
 async function main () {
-  console.log('moypolk stage 1')
+  console.log('Moypolk stage 1')
 
   for (const f of alphabet) {
     for (const s of alphabet) {
@@ -29,7 +29,7 @@ async function main () {
     }
   }
 
-  console.log('moypolk stage 2')
+  console.log('Moypolk stage 2')
 
   const entries = Array.from(realm.objects('Veteran'))
   const count = entries.length

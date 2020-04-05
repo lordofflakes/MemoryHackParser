@@ -3,11 +3,11 @@ const cheerio = require('cheerio')
 const Entities = require('html-entities').AllHtmlEntities
 const entities = new Entities()
 const Realm = require('realm')
-const schema = require('./schema')
+const schema = require('./utility/schema')
 const striptags = require('striptags')
 const uuid = require('uuid')
 
-const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 3, path: 'default.realm' })
+const realm = new Realm({ schema: [schema.Veteran, schema.FacePhoto], schemaVersion: 3, path: 'realm/default.realm' })
 
 async function main () {
   const letterURLs = await getLeterURLS()
