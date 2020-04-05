@@ -114,7 +114,10 @@ const getDiscriptor = async function (veteran) {
                 fs.unlinkSync(addressConvert)
                 resolve(false)
               })
-          } else resolve(false)
+          } else {
+            fs.unlinkSync(addressConvert)
+            resolve(false)
+          }
         }
         else resolve(veteran.facePhotos[0].descriptor)
       }
