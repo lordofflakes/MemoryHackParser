@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Parser",
   "main": "crawler.js",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "@tensorflow/tfjs-node": "^1.5.2",
     "canvas": "^2.6.1",
