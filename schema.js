@@ -11,7 +11,10 @@ const Veteran = {
     feats: 'string',
     featsImages: 'string[]',
     bio: 'string',
-    possiblyRelated: 'Veteran[]'
+    possiblyRelated: 'Veteran[]',
+    profileUrl: 'string',
+    origin: { type: 'bool', default: false },
+    filled: { type: 'bool', default: false }
   }
 }
 const FacePhoto = {

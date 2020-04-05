@@ -1,9 +1,6 @@
 const tf = require('@tensorflow/tfjs-node')
 const fs = require('fs')
 const canvas = require('canvas')
-const request = require('request')
-const Jimp = require('jimp')
-const uuid = require('uuid')
 
 const faceapi = require('face-api.js')
 
@@ -28,7 +25,6 @@ function getPhotoTensor(pathPhoto) {
       }
     })
   })
-
 }
 
 const getNumberOfPeoples = imagePath => {
@@ -59,6 +55,19 @@ const getDescriptor = imagePath => {
   })
 }
 
+const compare2Descriptors = (desc1, desc2) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const dist = faceapi.euclideanDistance(desc1, desc2)
+      if (1 - dist > 0.6) resolve(true)
+      else resolve(false)
+    }
+    catch (e) {
+      reject(e)
+    }
+  })
+}
+
 const compare = (imagePath1, imagePath2) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -73,56 +82,29 @@ const compare = (imagePath1, imagePath2) => {
     }
   })
 }
-// /home/kortium/Downloads/20150506_img_0011.jpg
 
-const download = (downAddress, saveAddress) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      request
-        .get(downAddress)
-        .on('error', function (err) {
-          console.error(err)
-        })
-        .pipe(fs.createWriteStream(saveAddress))
-        .on('close', () => resolve(true))
-    } catch (e) {
-      reject(e)
-    }
-  })
+module.exports = {
+  initialize,
+  compare,
+  getDescriptor,
+  compare2Descriptors,
+  getNumberOfPeoples
 }
 
-const convertToJPG = (openAddress, saveAddress) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      await Jimp.read(openAddress, (err, pic) => {
-        if (err) throw err
-        pic
-          .quality(60)
-          .writeAsync(saveAddress).then((Result) => {
-            resolve(true)
-          })
-      })
-    } catch (e) {
-      reject(e)
-    }
-  })
-}
-
-initialize().then(async () => {
-  const name1 = uuid.v4()
-  const name2 = uuid.v4()
-  const name3 = uuid.v4()
-  const name4 = uuid.v4()
-  await download('https://cdn.moypolk.ru/static/resize/w1000/soldiers/unknown/2020/04/03/072f0be88c2c5ad0f253b35b66e3fd22.jpeg', `Downloads/${name1}`)
-  await download('https://cdn.moypolk.ru/static/resize/w512/soldiers/photo/2020/04/04/aac2708efcaab9f9993f0a01fe049a32.jpeg', `Downloads/${name2}`)
-  await convertToJPG(`Downloads/${name1}`, `Downloads/${name3}.jpg`)
-  await convertToJPG(`Downloads/${name2}`, `Downloads/${name4}.jpg`)
-  await getNumberOfPeoples(`Downloads/${name3}.jpg`).then((res) => console.log(res))
-  await compare(`Downloads/${name3}.jpg`, `Downloads/${name4}.jpg`).then((Result) => {
-    console.log(Result)
-    fs.unlinkSync(`Downloads/${name1}`)
-    fs.unlinkSync(`Downloads/${name2}`)
-    fs.unlinkSync(`Downloads/${name4}.jpg`)
-    fs.unlinkSync(`Downloads/${name3}.jpg`)
-  })
-})
+// initialize().then(async () => {
+//   const name1 = uuid.v4()
+//   const name2 = uuid.v4()
+//   const name3 = uuid.v4()
+//   const name4 = uuid.v4()
+//   await download('https://cdn.moypolk.ru/static/resize/w1000/soldiers/unknown/2020/04/03/072f0be88c2c5ad0f253b35b66e3fd22.jpeg', `Downloads/${name1}`)
+//   await download('https://cdn.moypolk.ru/static/resize/w512/soldiers/photo/2020/04/04/aac2708efcaab9f9993f0a01fe049a32.jpeg', `Downloads/${name2}`)
+//   await convertToJPG(`Downloads/${name1}`, `Downloads/${name3}.jpg`)
+//   await convertToJPG(`Downloads/${name2}`, `Downloads/${name4}.jpg`)
+//   await getNumberOfPeoples(`Downloads/${name3}.jpg`).then((res) => console.log(res))
+//   await compare(`Downloads/${name3}.jpg`, `Downloads/${name4}.jpg`).then((Result) => {
+//     fs.unlinkSync(`Downloads/${name1}`)
+//     fs.unlinkSync(`Downloads/${name2}`)
+//     fs.unlinkSync(`Downloads/${name4}.jpg`)
+//     fs.unlinkSync(`Downloads/${name3}.jpg`)
+//   })
+// })
