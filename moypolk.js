@@ -1,11 +1,5 @@
-const request = require('request')
-const cheerio = require('cheerio')
-const Entities = require('html-entities').AllHtmlEntities
-const entities = new Entities()
 const Realm = require('realm')
 const schema = require('./schema')
-const striptags = require('striptags')
-const uuid = require('uuid')
 const moypolkSearch = require('./moypolkSearch')
 const writeStories = require('./writeStories')
 
