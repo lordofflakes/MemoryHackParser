@@ -2,7 +2,7 @@
   "name": "MemoryHackParser",
   "version": "1.0.0",
   "description": "Parser",
-  "main": "crawler.js",
+  "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
