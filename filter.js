@@ -16,6 +16,10 @@ async function main () {
   for (const veteran of veterans) {
     console.log(`Checked ${cnt} veterans found ${cnt_origin} original ones`)
     cnt++
+    if (veteran.origin) {
+      cnt_origin++
+      continue
+    }
     if (!checkers.checkVeteranAdequate(veteran)) continue
     const origins = checkers.starterCheck(veteran)
     if (origins) {
